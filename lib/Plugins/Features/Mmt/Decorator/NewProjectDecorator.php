@@ -20,7 +20,6 @@ class NewProjectDecorator extends AbstractDecorator {
     protected $template ;
 
     public function decorate(){
-        $this->template->append( 'footer_js', Routes::staticSrc( 'mmt_extensions.js' ) );
     }
 
 }
