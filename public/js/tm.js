@@ -41,6 +41,16 @@ import ShareTmModal from './cat_source/es6/components/modals/ShareTmModal'
 
       UI.checkTMKeysUpdateChecks()
       UI.checkCrossLanguageSettings()
+
+      $('.mt-provider').each(function (k, v) {
+        if ($(v).text() === 'ModernMT') {
+          $(v).append(
+            $(
+              '<span> (<a href="https://guides.matecat.com/modernmt-mmt-plug-in" target="_blank">Details</a>)</span>',
+            ),
+          )
+        }
+      })
       $('.popup-tm .x-popup, .popup-tm h1 .continue').click(function (e) {
         e.preventDefault()
         UI.saveTMdata(true)
