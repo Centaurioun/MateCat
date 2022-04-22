@@ -26,8 +26,10 @@ const createNewEntitiesFromMap = (
   const offsetWithEntities = []
   let slicedLength = 0
 
+  const tagRangeWithIndexes = addIncrementalIndex(tagRange)
+
   // Executre replace with placeholder and adapt offsets
-  tagRange.forEach((tagEntity) => {
+  tagRangeWithIndexes.forEach((tagEntity) => {
     const {name: tagName, placeholder, encodedText} = tagEntity.data
     if (!excludedTagsType.includes(tagName)) {
       const start = tagEntity.offset - slicedLength
@@ -128,7 +130,38 @@ const createNewEntitiesFromMap = (
       }
     })
   })
-  return {contentState: plainContentState, tagRange}
+  return {
+    contentState: plainContentState,
+    tagRange: tagRangeWithIndexes,
+  }
 }
+
+const addIncrementalIndex = (tagRange) =>
+  tagRange.reduce((acc, cur) => {
+    const {decodedText, encodedText} = cur.data
+    const reversed = [...acc].reverse()
+    const lastIndex =
+      reversed.find(({data}) => data.decodedText === decodedText)?.data
+        ?.index ?? -1
+
+    const haveMultipleMatches =
+      tagRange.filter(({data}) => data.decodedText === cur.data.decodedText)
+        .length > 1
+
+    return [
+      ...acc,
+      {
+        ...cur,
+        data: {
+          ...cur.data,
+          ...(isXliff2(encodedText) &&
+            haveMultipleMatches && {index: lastIndex + 1}),
+        },
+      },
+    ]
+  }, [])
+
+const isXliff2 = (encodedText) =>
+  /\bph\b/.test(encodedText) && !/id=\"mtc_/.test(encodedText) //eslint-disable-line
 
 export default createNewEntitiesFromMap
