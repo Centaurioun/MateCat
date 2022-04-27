@@ -15,9 +15,9 @@ import {deleteMTEngine} from './cat_source/es6/api/deleteMTEngine'
 import {downloadTMX as downloadTMXApi} from './cat_source/es6/api/downloadTMX'
 import {loadTMX} from './cat_source/es6/api/loadTMX'
 import {loadGlossaryFile} from './cat_source/es6/api/loadGlossaryFile'
-import {ModalWindow} from './cat_source/es6/components/modals/ModalWindow'
 import AlertModal from './cat_source/es6/components/modals/AlertModal'
 import ShareTmModal from './cat_source/es6/components/modals/ShareTmModal'
+import ModalsActions from './cat_source/es6/actions/ModalsActions'
 ;(function ($) {
   function isVisible($el) {
     var winTop = $(window).scrollTop()
@@ -161,14 +161,14 @@ import ShareTmModal from './cat_source/es6/components/modals/ShareTmModal'
             successText: 'Continue',
             successCallback: function () {
               UI.addMTEngine(provider, providerName)
-              ModalWindow.onCloseModal()
+              ModalsActions.onCloseModal()
             },
             warningText: 'Cancel',
             warningCallback: function () {
-              ModalWindow.onCloseModal()
+              ModalsActions.onCloseModal()
             },
           }
-          ModalWindow.showModalComponent(
+          ModalsActions.showModalComponent(
             ConfirmMessageModal,
             props,
             'Confirmation required',
@@ -347,7 +347,7 @@ import ShareTmModal from './cat_source/es6/components/modals/ShareTmModal'
             UI.hideAllBoxOnTables()
             if (this.files[0].size > config.maxTMXFileSize) {
               const numMb = config.maxTMXFileSize / (1024 * 1024)
-              ModalWindow.showModalComponent(
+              ModalsActions.showModalComponent(
                 AlertModal,
                 {
                   text:
@@ -768,7 +768,7 @@ import ShareTmModal from './cat_source/es6/components/modals/ShareTmModal'
                 : 'update',
               key: $(tr).find('.privatekey').text(),
             }
-            ModalWindow.showModalComponent(
+            ModalsActions.showModalComponent(
               ConfirmMessageModal,
               {
                 text: 'If you confirm this action, your Private TM key will be lost. <br />If you want to avoid this, please, log in with your account now.',
@@ -1218,7 +1218,7 @@ import ShareTmModal from './cat_source/es6/components/modals/ShareTmModal'
 
     allTMUploadsCompleted: function () {
       if ($('#activetm .uploadfile.uploading').length) {
-        ModalWindow.showModalComponent(
+        ModalsActions.showModalComponent(
           AlertModal,
           {
             text: 'There is one or more TM uploads in progress. Try again when all uploads are completed!',
@@ -1227,7 +1227,7 @@ import ShareTmModal from './cat_source/es6/components/modals/ShareTmModal'
         )
         return false
       } else if ($('tr td a.downloading').length) {
-        ModalWindow.showModalComponent(
+        ModalsActions.showModalComponent(
           AlertModal,
           {
             text: 'There is one or more TM downloads in progress. Try again when all downloads are completed or open another browser tab.',
@@ -1974,7 +1974,7 @@ import ShareTmModal from './cat_source/es6/components/modals/ShareTmModal'
         var description = tr.find('.edit-desc').data('descr')
 
         tr.find('.message-share-tmx-openemailpopup').on('click', function () {
-          ModalWindow.showModalComponent(
+          ModalsActions.showModalComponent(
             ShareTmModal,
             {
               description,
