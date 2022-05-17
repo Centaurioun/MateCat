@@ -100,4 +100,5 @@ module.exports = keyMirror({
   SET_GUESS_TAGS: null,
   HIGHLIGHT_TAGS: null,
   SET_SEGMENT_SAVING: null,
+  CHARACTER_COUNTER: null,
 })

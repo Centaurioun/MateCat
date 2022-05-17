@@ -1792,6 +1792,13 @@ AppDispatcher.register(function (action) {
         SegmentStore._segments,
       )
       break
+    case SegmentConstants.CHARACTER_COUNTER:
+      SegmentStore.emitChange(SegmentConstants.CHARACTER_COUNTER, {
+        sid: action.sid,
+        counter: action.counter,
+        limit: action.limit,
+      })
+      break
     default:
       SegmentStore.emitChange(action.actionType, action.sid, action.data)
   }
