@@ -2,6 +2,8 @@ import React from 'react'
 
 import SegmentActions from '../../../actions/SegmentActions'
 import LXQ from '../../../utils/lxq.main'
+import SegmentStore from '../../../stores/SegmentStore'
+import SegmentConstants from '../../../constants/SegmentConstants'
 
 class QAComponent extends React.Component {
   constructor(props) {
@@ -20,7 +22,23 @@ class QAComponent extends React.Component {
         GLOSSARY: 'Glossary',
         MISMATCH: 'T. Conflicts',
       },
+      totalWarnings: 0,
+      warnings: {
+        ERROR: {
+          Categories: {},
+          total: 0,
+        },
+        WARNING: {
+          Categories: {},
+          total: 0,
+        },
+        INFO: {
+          Categories: {},
+          total: 0,
+        },
+      },
     }
+    this.receiveGlobalWarnings = this.receiveGlobalWarnings.bind(this)
   }
 
   scrollToSegment(increment) {
@@ -62,22 +80,38 @@ class QAComponent extends React.Component {
     return {__html: string}
   }
 
-  componentDidMount() {}
+  componentDidMount() {
+    SegmentStore.addListener(
+      SegmentConstants.UPDATE_GLOBAL_WARNINGS,
+      this.receiveGlobalWarnings,
+    )
+  }
 
-  componentWillUnmount() {}
+  componentWillUnmount() {
+    SegmentStore.removeListener(
+      SegmentConstants.UPDATE_GLOBAL_WARNINGS,
+      this.receiveGlobalWarnings,
+    )
+  }
 
-  static getDerivedStateFromProps(props, state) {
-    const category = props.warnings[state.currentPriority]
-      ? props.warnings[state.currentPriority].Categories[state.currentCategory]
+  receiveGlobalWarnings(warnings) {
+    const category = warnings[this.state.currentPriority]
+      ? warnings[this.state.currentPriority].Categories[
+          this.state.currentCategory
+        ]
       : null
-    if (props.warnings && category) {
-      return {
+    if (warnings && category) {
+      this.setState({
+        warnings: warnings.matecat,
+        totalWarnings: warnings.matecat.total,
         navigationList: category,
-      }
+      })
     } else {
-      return {
+      this.setState({
+        warnings: warnings.matecat,
+        totalWarnings: warnings.matecat.total,
         navigationList: [],
-      }
+      })
     }
   }
 
@@ -86,10 +120,10 @@ class QAComponent extends React.Component {
       error = [],
       warning = [],
       info = []
-    if (this.props.warnings) {
-      if (this.props.warnings.ERROR.total > 0) {
-        Object.keys(this.props.warnings.ERROR.Categories).map((key, index) => {
-          if (this.props.warnings.ERROR.Categories[key].length > 0) {
+    if (this.state.warnings) {
+      if (this.state.warnings.ERROR.total > 0) {
+        Object.keys(this.state.warnings.ERROR.Categories).map((key, index) => {
+          if (this.state.warnings.ERROR.Categories[key].length > 0) {
             if (key === 'TAGS') {
               let activeClass =
                 this.state.currentPriority === 'ERROR' &&
@@ -102,14 +136,14 @@ class QAComponent extends React.Component {
                   className={'ui button qa-issue' + activeClass}
                   onClick={this.setCurrentNavigationElements.bind(
                     this,
-                    this.props.warnings.ERROR.Categories[key],
+                    this.state.warnings.ERROR.Categories[key],
                     'ERROR',
                     key,
                   )}
                 >
                   <i className="icon-cancel-circle icon"></i>
                   {this.state.labels[key] ? this.state.labels[key] : key} errors
-                  <b> ({this.props.warnings.ERROR.Categories[key].length})</b>
+                  <b> ({this.state.warnings.ERROR.Categories[key].length})</b>
                 </button>,
               )
             } else {
@@ -124,24 +158,24 @@ class QAComponent extends React.Component {
                   className={'ui button qa-issue' + activeClass}
                   onClick={this.setCurrentNavigationElements.bind(
                     this,
-                    this.props.warnings.ERROR.Categories[key],
+                    this.state.warnings.ERROR.Categories[key],
                     'ERROR',
                     key,
                   )}
                 >
                   <i className="icon-cancel-circle icon"></i>
                   {this.state.labels[key] ? this.state.labels[key] : key}
-                  <b> ({this.props.warnings.ERROR.Categories[key].length})</b>
+                  <b> ({this.state.warnings.ERROR.Categories[key].length})</b>
                 </button>,
               )
             }
           }
         })
       }
-      if (this.props.warnings.WARNING.total > 0) {
-        Object.keys(this.props.warnings.WARNING.Categories).map(
+      if (this.state.warnings.WARNING.total > 0) {
+        Object.keys(this.state.warnings.WARNING.Categories).map(
           (key, index) => {
-            if (this.props.warnings.WARNING.Categories[key].length > 0) {
+            if (this.state.warnings.WARNING.Categories[key].length > 0) {
               let activeClass =
                 this.state.currentPriority === 'WARNING' &&
                 this.state.currentCategory === key
@@ -154,7 +188,7 @@ class QAComponent extends React.Component {
                     className={'ui button qa-issue' + activeClass}
                     onClick={this.setCurrentNavigationElements.bind(
                       this,
-                      this.props.warnings.WARNING.Categories[key],
+                      this.state.warnings.WARNING.Categories[key],
                       'WARNING',
                       key,
                     )}
@@ -165,7 +199,7 @@ class QAComponent extends React.Component {
                     <b>
                       {' '}
                       ({
-                        this.props.warnings.WARNING.Categories[key].length
+                        this.state.warnings.WARNING.Categories[key].length
                       }){' '}
                     </b>
                   </button>,
@@ -177,7 +211,7 @@ class QAComponent extends React.Component {
                     className={'ui button qa-issue' + activeClass}
                     onClick={this.setCurrentNavigationElements.bind(
                       this,
-                      this.props.warnings.WARNING.Categories[key],
+                      this.state.warnings.WARNING.Categories[key],
                       'WARNING',
                       key,
                     )}
@@ -187,7 +221,7 @@ class QAComponent extends React.Component {
                     <b>
                       {' '}
                       ({
-                        this.props.warnings.WARNING.Categories[key].length
+                        this.state.warnings.WARNING.Categories[key].length
                       }){' '}
                     </b>
                   </button>,
@@ -199,7 +233,7 @@ class QAComponent extends React.Component {
                     className={'ui button qa-issue' + activeClass}
                     onClick={this.setCurrentNavigationElements.bind(
                       this,
-                      this.props.warnings.WARNING.Categories[key],
+                      this.state.warnings.WARNING.Categories[key],
                       'WARNING',
                       key,
                     )}
@@ -209,7 +243,7 @@ class QAComponent extends React.Component {
                     <b>
                       {' '}
                       ({
-                        this.props.warnings.WARNING.Categories[key].length
+                        this.state.warnings.WARNING.Categories[key].length
                       }){' '}
                     </b>
                   </button>
@@ -219,9 +253,9 @@ class QAComponent extends React.Component {
           },
         )
       }
-      if (this.props.warnings.INFO.total > 0) {
-        Object.keys(this.props.warnings.INFO.Categories).map((key, index) => {
-          if (this.props.warnings.INFO.Categories[key].length > 0) {
+      if (this.state.warnings.INFO.total > 0) {
+        Object.keys(this.state.warnings.INFO.Categories).map((key, index) => {
+          if (this.state.warnings.INFO.Categories[key].length > 0) {
             let activeClass =
               this.state.currentPriority === 'INFO' &&
               this.state.currentCategory === key
@@ -233,13 +267,13 @@ class QAComponent extends React.Component {
                 className={'ui button qa-issue' + activeClass}
                 onClick={this.setCurrentNavigationElements.bind(
                   this,
-                  this.props.warnings.INFO.Categories[key],
+                  this.state.warnings.INFO.Categories[key],
                   'INFO',
                   key,
                 )}
               >
                 {this.state.labels[key] ? this.state.labels[key] : key}{' '}
-                <b> ({this.props.warnings.INFO.Categories[key].length})</b>
+                <b> ({this.state.warnings.INFO.Categories[key].length})</b>
               </button>,
             )
           }
@@ -248,7 +282,7 @@ class QAComponent extends React.Component {
     }
     let segmentsWithActive =
       error.length > 0 || warning.length > 0 || info.length > 0 ? true : false
-    return this.props.active && this.props.totalWarnings > 0 ? (
+    return this.props.active && this.state.totalWarnings > 0 ? (
       <div className="qa-wrapper">
         <div className="qa-container">
           <div className="qa-container-inside">
