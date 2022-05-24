@@ -822,6 +822,8 @@ const SegmentStore = assign({}, EventEmitter.prototype, {
       )
       this._globalWarnings.matecat.INFO.total =
         this._globalWarnings.lexiqa.length
+      this._globalWarnings.matecat.total =
+        this._globalWarnings.matecat.total + this._globalWarnings.lexiqa.length
     }
   },
   updateLexiqaWarnings: function (warnings) {
@@ -831,6 +833,8 @@ const SegmentStore = assign({}, EventEmitter.prototype, {
     if (warnings && warnings.length > 0) {
       this._globalWarnings.matecat.INFO.Categories['lexiqa'] = _.uniq(warnings)
       this._globalWarnings.matecat.INFO.total = warnings.length
+      this._globalWarnings.matecat.total =
+        this._globalWarnings.matecat.total + warnings.length
     }
   },
   addSearchResult: function (
