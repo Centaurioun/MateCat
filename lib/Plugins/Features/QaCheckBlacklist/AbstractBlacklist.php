@@ -69,7 +69,6 @@ abstract class AbstractBlacklist {
         $content = $this->getContent();
 
         if ( null !== $content ) {
-
             return explode( PHP_EOL, $content );
         }
 

@@ -1,7 +1,7 @@
-import Cookies from 'js-cookie'
 import _ from 'lodash'
 import {createRoot} from 'react-dom/client'
 import React from 'react'
+import Cookies from 'js-cookie'
 
 import ModalsActions from './cat_source/es6/actions/ModalsActions'
 import CatToolActions from './cat_source/es6/actions/CatToolActions'

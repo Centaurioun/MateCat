@@ -177,6 +177,7 @@ class BlacklistUtils
 
         $blacklistFromTextFile = new BlacklistFromTextFile( $blacklistFilePath, $job->id, $job->password );
         $blacklistFromTextFile->setContent($content);
+
         $this->ensureCached($keyOnCache, serialize($blacklistFromTextFile));
 
         return $blacklistFromTextFile;

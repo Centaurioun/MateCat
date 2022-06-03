@@ -180,6 +180,7 @@ module.exports = function (grunt) {
           basePath + 'gdrive.upload.js',
           basePath + 'gdrive.picker.js',
           basePath + 'new-project.js',
+          // The main application script
           basePath + 'tm.js',
         ],
         dest: buildPath + 'upload.js',
