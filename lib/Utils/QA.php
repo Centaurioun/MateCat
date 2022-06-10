@@ -1461,23 +1461,16 @@ class QA {
      */
     protected function _getTagDiff() {
 
-//        Log::doJsonLog( $this->source_seg );
-//        Log::doJsonLog( $this->target_seg );
-
         preg_match_all( '/(<(?:[^>]+id\s*=[^>]+)[\/]{0,1}>)/', $this->source_seg, $matches );
         $malformedXmlSrcStruct = $matches[ 1 ];
         preg_match_all( '/(<(?:[^>]+id\s*=[^>]+)[\/]{0,1}>)/', $this->target_seg, $matches );
         $malformedXmlTrgStruct = $matches[ 1 ];
 
-//        Log::doJsonLog( $malformedXmlSrcStruct );
-//        Log::doJsonLog( $malformedXmlTrgStruct );
-
         //this is for </g>
         preg_match_all( '/(<\/[a-zA-Z]+>)/', $this->source_seg, $matches );
         $_closingSrcTag = $matches[ 1 ];
-//        Log::doJsonLog(  $matches );
+
         preg_match_all( '/(<\/[a-zA-Z]+>)/', $this->target_seg, $matches );
-//        Log::doJsonLog(  $matches );
         $_closingTrgTag = $matches[ 1 ];
 
         $clonedSrc = $malformedXmlSrcStruct;
@@ -1520,11 +1513,7 @@ class QA {
             $totalResult[ 'target' ][] = $target_segment;
         }
 
-
-//        Log::doJsonLog($totalResult);
-
         $this->malformedXmlStructDiff = $totalResult;
-
     }
 
     /**
@@ -1642,6 +1631,11 @@ class QA {
         foreach ( $selfClosingTags_trg as $pos => $tag ) {
             $this->_checkForIdMismatchOrEquivTextMismatch($selfClosingTags_src[ $pos ], $tag, $selfClosingTags_trg[ $pos ]);
         }
+
+        // If there are errors get tag diff for the UI
+        if ( $this->thereAreErrors() ) {
+            $this->_getTagDiff();
+        }
     }
 
     /**
@@ -1665,7 +1659,6 @@ class QA {
         if(!empty($idSourceMatch[1]) and !empty($idTargetMatch[1]) ){
             if($idSourceMatch[1] !== $idTargetMatch[1]){
                 $this->addError( self::ERR_TAG_ORDER );
-                $this->tagPositionError[] = ( new LtGtEncode() )->transform( $completeTarget );
 
                 return;
             }
@@ -1678,7 +1671,6 @@ class QA {
         if(!empty($equivTextSourceMatch[1]) and !empty($equivTextTargetMatch[1]) ){
             if($equivTextSourceMatch[1] !== $equivTextTargetMatch[1]){
                 $this->addError( self::ERR_TAG_MISMATCH );
-                $this->tagPositionError[] = ( new LtGtEncode() )->transform( $completeTarget );
 
                 return;
             }
@@ -1933,7 +1925,6 @@ class QA {
             $diffArray = array_diff_assoc( $this->srcDomMap[ 'refID' ], $this->trgDomMap[ 'refID' ] );
             if ( !empty( $diffArray ) && !empty( $this->trgDomMap[ 'DOMElement' ] ) ) {
                 $this->addError( self::ERR_TAG_ID );
-//            Log::doJsonLog($diffArray);
             }
         }
     }
