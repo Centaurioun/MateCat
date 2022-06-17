@@ -96,7 +96,7 @@ class ProjectsController extends KleinController {
         return $this->changeStatus(\Constants_JobStatus::STATUS_ACTIVE );
     }
 
-    private function changeStatus($status){
+    protected function changeStatus($status){
 
         $chunks = $this->project->getJobs();
         Jobs_JobDao::updateAllJobsStatusesByProjectId( $this->project->id, $status );
